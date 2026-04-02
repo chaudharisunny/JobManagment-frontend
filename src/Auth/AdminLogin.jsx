@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
+import { setAuth } from "../utils/Auth";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const AdminLogin = () => {
 
       // ✅ Normalize roles
       const roles = (user.roles || []).map((r) =>
-        r.toLowerCase().trim()
+        String(r).toLowerCase().trim()
       );
 
       // ❌ Block non-admin
@@ -50,12 +51,13 @@ const AdminLogin = () => {
         return;
       }
 
-      // 🔥 ✅ USE SEPARATE ADMIN STORAGE
-      sessionStorage.setItem("adminToken", token);
-      sessionStorage.setItem("adminRoles", JSON.stringify(roles));
-      sessionStorage.setItem("adminUser", JSON.stringify(user));
+      // ✅ Save auth correctly (FIXED)
+      setAuth(token, roles);
 
-      // ✅ Direct navigation (NO timeout)
+      // optional: store user
+      sessionStorage.setItem("user", JSON.stringify(user));
+
+      // ✅ Navigate correctly
       navigate("/admin/dashboard", { replace: true });
 
     } catch (err) {

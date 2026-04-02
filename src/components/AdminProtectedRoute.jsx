@@ -1,30 +1,26 @@
 import { Navigate } from "react-router-dom";
 
 const AdminProtectedRoute = ({ children }) => {
-  const token = sessionStorage.getItem("token");
+  // ✅ Use separate admin storage
+  const token = sessionStorage.getItem("adminToken");
 
   let roles = [];
   try {
-    roles = JSON.parse(sessionStorage.getItem("roles") || "[]");
+    roles = JSON.parse(sessionStorage.getItem("adminRoles") || "[]");
   } catch {
     roles = [];
   }
 
-  const normalizedRoles = roles.map((r) =>
-    r.toLowerCase().trim()
-  );
+  const isAdmin = roles
+    .map((r) => r.toLowerCase().trim())
+    .includes("admin");
 
-  // ❌ Not logged in
-  if (!token) {
+  // ❌ Not logged in OR not admin
+  if (!token || !isAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 
-  // ❌ Not admin
-  if (!normalizedRoles.includes("admin")) {
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  // ✅ Allow access (NO null blocking)
+  // ✅ Allow access
   return children;
 };
 

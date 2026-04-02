@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 
@@ -12,26 +12,6 @@ const AdminLogin = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // ✅ Prevent logged-in admin from seeing login page again (FIXED)
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    let roles = [];
-    try {
-      roles = JSON.parse(sessionStorage.getItem("roles") || "[]");
-    } catch {
-      roles = [];
-    }
-
-    const normalizedRoles = roles.map((r) =>
-      r.toLowerCase().trim()
-    );
-
-    if (token && normalizedRoles.includes("admin")) {
-      navigate("/admin/dashboard", { replace: true });
-    }
-  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -70,15 +50,13 @@ const AdminLogin = () => {
         return;
       }
 
-      // ✅ Store auth data (IMPORTANT ORDER)
-      sessionStorage.setItem("token", token);
-      sessionStorage.setItem("roles", JSON.stringify(roles));
-      sessionStorage.setItem("user", JSON.stringify(user));
+      // 🔥 ✅ USE SEPARATE ADMIN STORAGE
+      sessionStorage.setItem("adminToken", token);
+      sessionStorage.setItem("adminRoles", JSON.stringify(roles));
+      sessionStorage.setItem("adminUser", JSON.stringify(user));
 
-      // 🔥 Small delay ensures storage is ready (prevents flicker)
-      setTimeout(() => {
-        navigate("/admin/dashboard", { replace: true });
-      }, 50);
+      // ✅ Direct navigation (NO timeout)
+      navigate("/admin/dashboard", { replace: true });
 
     } catch (err) {
       console.error(err);

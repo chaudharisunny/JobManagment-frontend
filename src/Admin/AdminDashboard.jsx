@@ -17,9 +17,9 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-  // ✅ ONLY load user (NO auth redirect logic here)
+  // ✅ Load admin user only (FIXED)
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("adminUser");
 
     try {
       if (storedUser) {
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // ✅ Loader instead of blocking render
+  // ✅ Loader
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -49,9 +49,12 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Logout
+  // ✅ Logout (ONLY admin data clear)
   const handleLogout = () => {
-    sessionStorage.clear();
+    sessionStorage.removeItem("adminToken");
+    sessionStorage.removeItem("adminUser");
+    sessionStorage.removeItem("adminRoles");
+
     navigate("/admin/login", { replace: true });
   };
 

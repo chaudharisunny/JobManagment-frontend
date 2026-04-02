@@ -17,32 +17,26 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-  // ✅ Load user safely (FIXED)
+  // ✅ ONLY load user (NO auth redirect logic here)
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
     const storedUser = sessionStorage.getItem("user");
 
-    // 🟡 Wait until sessionStorage is stable
-    if (token === null) return;
-
-    if (!token || !storedUser) {
-      sessionStorage.clear();
-      navigate("/admin/login", { replace: true }); // ✅ FIX
-      return;
-    }
-
     try {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     } catch {
-      sessionStorage.clear();
-      navigate("/admin/login", { replace: true }); // ✅ FIX
+      setUser(null);
     }
-  }, [navigate]);
+  }, []);
 
-  // 🔥 Prevent UI flash
+  // ✅ Loader instead of blocking render
   if (!user) {
-    return null; // or loader
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-medium">Loading...</p>
+      </div>
+    );
   }
 
   // ✅ Toggle dropdown
@@ -55,10 +49,10 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Logout (FIXED)
+  // ✅ Logout
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/admin/login", { replace: true }); // ✅ FIX
+    navigate("/admin/login", { replace: true });
   };
 
   const getInitial = (name) =>

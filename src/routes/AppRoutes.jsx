@@ -11,7 +11,7 @@ import DashboardHome from "../Admin/DashboardHome";
 import AllUsers from "../Admin/AllUsers";
 import AllRecruiter from "../Admin/AllRecruiter";
 import AllJobs from "../Admin/AllJobs";
-import AdminLogin from "../Admin/AdminLogin";
+import AdminLogin from "../Auth/AdminLogin";
 
 import AdminProtectedRoute from "../components/AdminProtectedRoute";
 

@@ -5,6 +5,7 @@ import {
   Briefcase,
   LayoutDashboard,
 } from "lucide-react";
+import { clearAuth } from "../utils/Auth";
 
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
@@ -17,9 +18,9 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-  // ✅ Load admin user only (FIXED)
+  // ✅ FIXED: Load user from correct storage
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("adminUser");
+    const storedUser = sessionStorage.getItem("user");
 
     try {
       if (storedUser) {
@@ -30,14 +31,8 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // ✅ Loader
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium">Loading...</p>
-      </div>
-    );
-  }
+  // ❌ REMOVE LOADER BLOCKING UI
+  // Instead allow UI even if user null
 
   // ✅ Toggle dropdown
   const toggleDropdown = (key) => {
@@ -49,13 +44,12 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Logout (ONLY admin data clear)
+  // ✅ FIXED LOGOUT
   const handleLogout = () => {
-    sessionStorage.removeItem("adminToken");
-    sessionStorage.removeItem("adminUser");
-    sessionStorage.removeItem("adminRoles");
+    clearAuth(); // removes token + roles
+    sessionStorage.removeItem("user");
 
-    navigate("/admin/login", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   const getInitial = (name) =>
@@ -75,7 +69,6 @@ const AdminDashboard = () => {
           <LayoutDashboard size={18} /> Dashboard
         </NavLink>
 
-        {/* USERS */}
         <button
           onClick={() => toggleDropdown("users")}
           className="p-2 w-full flex justify-between hover:bg-gray-800 mt-2"
@@ -94,7 +87,6 @@ const AdminDashboard = () => {
           </NavLink>
         )}
 
-        {/* RECRUITERS */}
         <button
           onClick={() => toggleDropdown("recruiters")}
           className="p-2 w-full flex justify-between hover:bg-gray-800 mt-2"
@@ -113,7 +105,6 @@ const AdminDashboard = () => {
           </NavLink>
         )}
 
-        {/* JOBS */}
         <button
           onClick={() => toggleDropdown("jobs")}
           className="p-2 w-full flex justify-between hover:bg-gray-800 mt-2"

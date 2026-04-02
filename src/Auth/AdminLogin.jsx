@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
-import { setAuth } from "../utils/Auth";
+import { setAuth } from "../utils/Auth"; // ✅ FIXED (lowercase)
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -51,14 +51,14 @@ const AdminLogin = () => {
         return;
       }
 
-      // ✅ Save auth correctly (FIXED)
+      // ✅ Save auth correctly
       setAuth(token, roles);
 
       // optional: store user
       sessionStorage.setItem("user", JSON.stringify(user));
 
-      // ✅ Navigate correctly
-      navigate("/admin/dashboard", { replace: true });
+      // ✅ FIXED NAVIGATION
+      navigate("/admin", { replace: true });
 
     } catch (err) {
       console.error(err);

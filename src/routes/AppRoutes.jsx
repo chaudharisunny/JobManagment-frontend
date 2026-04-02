@@ -24,14 +24,14 @@ const AppRoutes = () => {
       <Route path="/jobs" element={<Jobs />} />
       <Route path="/jobdetails/:id" element={<JobDetails />} />
 
-      {/* 🔐 User Auth (NO PublicRoute) */}
+      {/* 🔐 User Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Registration />} />
 
-      {/* 🔐 Admin Login (NO PublicRoute) */}
+      {/* 🔐 Admin Login */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
-      {/* 🔐 Admin Panel (ONLY ONE GUARD) */}
+      {/* 🔐 Admin Panel */}
       <Route
         path="/admin"
         element={
@@ -40,7 +40,9 @@ const AppRoutes = () => {
           </AdminProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        {/* ✅ FIXED */}
+        <Route index element={<DashboardHome />} />
+
         <Route path="dashboard" element={<DashboardHome />} />
         <Route path="users" element={<AllUsers />} />
         <Route path="recruiters" element={<AllRecruiter />} />

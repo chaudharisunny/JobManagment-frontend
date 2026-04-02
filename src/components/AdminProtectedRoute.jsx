@@ -3,31 +3,22 @@ import { getToken, getRoles } from "../utils/Auth";
 
 const AdminProtectedRoute = ({ children }) => {
   const token = getToken();
-  let roles = getRoles();
+  const roles = getRoles();
 
-  // ✅ Ensure roles is always array
-  if (!Array.isArray(roles)) {
-    roles = [roles];
-  }
-
-  // ✅ Normalize roles safely
-  const normalizedRoles = roles.map((r) =>
-    String(r).toLowerCase().trim()
+  const isAdmin = roles.some((r) =>
+    String(r).toLowerCase().includes("admin")
   );
 
-  const isAdmin = normalizedRoles.includes("admin");
-
-  // ❌ Not logged in
+  // ❌ No token → go to ADMIN login
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
-  // ❌ Not admin
+  // ❌ Not admin → ALSO go to ADMIN login (not /login)
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
-  // ✅ Allow access
   return children;
 };
 

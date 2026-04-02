@@ -49,7 +49,7 @@ const AdminDashboard = () => {
     clearAuth(); // removes token + roles
     sessionStorage.removeItem("user");
 
-    navigate("/login", { replace: true });
+    navigate("/admin/login", { replace: true });
   };
 
   const getInitial = (name) =>

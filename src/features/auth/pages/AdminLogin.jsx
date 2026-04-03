@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../services/api";
-import { setAuth } from "../utils/Auth"; // ✅ FIXED (lowercase)
+
+import { setAuth } from "../../../utils/Auth";
+import API from "../../../services/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -14,13 +15,15 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Handle input
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
+  // Handle login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,41 +31,44 @@ const AdminLogin = () => {
       setLoading(true);
       setError("");
 
-      const response = await API.post("/auth/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const { data } = await API.post("/auth/login", formData);
 
-      const token = response?.data?.token;
-      const user = response?.data?.user;
+      // ✅ Handle both possible backend formats
+      const token = data?.token || data?.data?.token;
+      const user = data?.user || data?.data?.user;
 
       if (!token || !user) {
-        throw new Error("Invalid response from server");
+        throw new Error("Invalid server response");
       }
 
-      // ✅ Normalize roles
+      // ✅ Normalize roles (SAFE)
       const roles = (user.roles || []).map((r) =>
         String(r).toLowerCase().trim()
       );
 
-      // ❌ Block non-admin
-      if (!roles.includes("admin")) {
-        setError("Access denied: Admins only");
-        return;
+      // ✅ Flexible admin check (FIXED BUG)
+      const isAdmin = roles.some((r) => r.includes("admin"));
+
+      if (!isAdmin) {
+        throw new Error("Access denied: Admins only");
       }
 
-      // ✅ Save auth correctly
+      // ✅ Save auth
       setAuth(token, roles);
 
-      // optional: store user
-      sessionStorage.setItem("user", JSON.stringify(user));
+      // ✅ Save minimal user
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: user.name,
+          email: user.email,
+        })
+      );
 
-      // ✅ FIXED NAVIGATION
-      navigate("/admin", { replace: true });
+      // ✅ Redirect
+      navigate("/admin/dashboard", { replace: true });
 
     } catch (err) {
-      console.error(err);
-
       setError(
         err.response?.data?.message ||
         err.message ||
@@ -76,6 +82,7 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+
         <h2 className="text-3xl font-bold text-center mb-6">
           Admin Login
         </h2>
@@ -87,24 +94,25 @@ const AdminLogin = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
+
           <input
             type="email"
             name="email"
             placeholder="Admin Email"
-            required
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black"
+            required
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black outline-none"
           />
 
           <input
             type="password"
             name="password"
             placeholder="Password"
-            required
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black"
+            required
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black outline-none"
           />
 
           <button
@@ -114,6 +122,7 @@ const AdminLogin = () => {
           >
             {loading ? "Logging in..." : "Login as Admin"}
           </button>
+
         </form>
 
         <p className="mt-6 text-center text-gray-500 text-sm">
@@ -122,6 +131,7 @@ const AdminLogin = () => {
             User Login
           </Link>
         </p>
+
       </div>
     </div>
   );

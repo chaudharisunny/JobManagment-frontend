@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import API from "../services/api";
+import API from "../../services/api";
+
 
 // ✅ Axios Instance
-
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -11,40 +11,40 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-const AllJobs = () => {
-  const [jobs, setJobs] = useState([]);
+const AllRecruiter = () => {
+  const [recruiters, setRecruiters] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch Jobs
-  const fetchJobs = async () => {
+  // ✅ Fetch Recruiters
+  const fetchRecruiters = async () => {
     try {
-      const res = await API.get("/admin/alljobs");
+      const res = await API.get("/admin/recruiters");
 
-      console.log("Jobs API:", res.data);
+      console.log("Recruiters API:", res.data);
 
-      setJobs(
+      setRecruiters(
         res.data?.data ||
-        res.data?.jobs ||
+        res.data?.recruiters ||
         (Array.isArray(res.data) ? res.data : [])
       );
     } catch (err) {
-      console.error("Error fetching jobs:", err);
+      console.error("Error fetching recruiters:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchJobs();
+    fetchRecruiters();
   }, []);
 
-  // ✅ Delete Job
+  // ✅ Delete Recruiter
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this job?")) return;
+    if (!window.confirm("Delete this recruiter?")) return;
 
     try {
-      await API.delete(`/jobs/${id}`);
-      setJobs((prev) => prev.filter((j) => j._id !== id));
+      await API.delete(`/recruiters/${id}`);
+      setRecruiters((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
       console.error("Delete Error:", err);
     }
@@ -53,42 +53,36 @@ const AllJobs = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading Jobs...
+        Loading Recruiters...
       </div>
     );
   }
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">All Jobs</h2>
+      <h2 className="text-xl font-bold mb-4">All Recruiters</h2>
 
       <table className="w-full bg-white shadow rounded">
         <thead className="bg-gray-200">
           <tr>
-            <th className="p-2">Title</th>
-            <th className="p-2">Salary</th>
-            <th className="p-2">Location</th>
+            <th className="p-2">Name</th>
+            <th className="p-2">Email</th>
             <th className="p-2">Company</th>
             <th className="p-2">Action</th>
           </tr>
         </thead>
 
         <tbody>
-          {jobs.length > 0 ? (
-            jobs.map((j) => (
-              <tr key={j._id} className="text-center border-t">
-                <td className="p-2">{j.title}</td>
-                <td className="p-2">{j.salary}</td>
-                <td className="p-2">{j.location}</td>
-
-                {/* ✅ IMPORTANT: depends on populate */}
-                <td className="p-2">
-                  {j.createdBy?.company || "N/A"}
-                </td>
+          {recruiters.length > 0 ? (
+            recruiters.map((r) => (
+              <tr key={r._id} className="text-center border-t">
+                <td className="p-2">{r.name}</td>
+                <td className="p-2">{r.email}</td>
+                <td className="p-2">{r.company}</td>
 
                 <td className="p-2">
                   <button
-                    onClick={() => handleDelete(j._id)}
+                    onClick={() => handleDelete(r._id)}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   >
                     Delete
@@ -98,8 +92,8 @@ const AllJobs = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="p-4 text-center">
-                No Jobs Found
+              <td colSpan="4" className="p-4 text-center">
+                No Recruiters Found
               </td>
             </tr>
           )}
@@ -109,4 +103,4 @@ const AllJobs = () => {
   );
 };
 
-export default AllJobs;
+export default AllRecruiter;

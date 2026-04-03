@@ -7,7 +7,7 @@ import {
   UserCheck,
   Layers,
 } from "lucide-react";
-import API from "../services/api";
+import API from "../../services/api";
 
 const DashboardHome = () => {
   const [stats, setStats] = useState({});

@@ -1,117 +1,132 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+// Navbar.jsx
+// Dynamic dropdown links with proper redirects/pages
+
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // 🔥 important
-  const [open, setOpen] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const menuRef = useRef();
 
   useEffect(() => {
-    // 🔥 Use SAME storage as admin
     const token = sessionStorage.getItem("token");
     const storedUser = sessionStorage.getItem("user");
+    const storedRoles = sessionStorage.getItem("roles");
 
     if (token && storedUser) {
       try {
         setUser(JSON.parse(storedUser));
+        setRoles(JSON.parse(storedRoles || "[]"));
       } catch {
         setUser(null);
+        setRoles([]);
       }
+    } else {
+      setUser(null);
+      setRoles([]);
     }
+  }, [location.pathname]);
 
-    setLoading(false); // ✅ done loading
+  useEffect(() => {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.clear(); // 🔥 match admin
-    navigate("/");
+    sessionStorage.clear();
+    setUser(null);
+    setRoles([]);
+    navigate("/", { replace: true });
   };
 
-  // 🔥 Prevent UI flash
-  if (loading) return null;
+  const getDashboardLink = () => {
+    if (roles.includes("admin")) return "/admin/dashboard";
+    if (roles.includes("recruiter")) return "/recruiter/dashboard";
+    return "/profile";
+  };
 
   return (
-    <nav className="w-full bg-white shadow-sm">
+    <nav className="w-full bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-        {/* LOGO */}
         <Link to="/" className="text-2xl font-bold text-gray-900">
           JobPortal
         </Link>
 
         <div className="flex items-center gap-6">
 
-          <Link
-            to="/"
-            className="text-gray-600 hover:text-black font-medium transition"
-          >
+          <Link to="/" className="text-gray-700 hover:text-black font-medium">
             Home
           </Link>
 
-          <Link
-            to="/jobs"
-            className="text-gray-600 hover:text-black font-medium transition"
-          >
+          <Link to="/jobs" className="text-gray-700 hover:text-black font-medium">
             Jobs
           </Link>
 
           {!user ? (
             <>
-              <Link
-                to="/login"
-                className="text-gray-600 hover:text-black font-medium transition"
-              >
+              <Link to="/login" className="text-gray-700 hover:text-black font-medium">
                 Login
               </Link>
 
               <Link
                 to="/register"
-                className="bg-black text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
+                className="bg-black text-white px-4 py-2 rounded-lg"
               >
                 Register
               </Link>
             </>
           ) : (
-            <div className="relative">
-
-              {/* Username */}
+            <div className="relative" ref={menuRef}>
               <button
-                onClick={() => setOpen(!open)}
-                className="font-medium text-gray-700"
+                onClick={() => setOpenMenu(!openMenu)}
+                className="font-semibold text-blue-600"
               >
-                {user?.name || "Account"}
+                {user?.email || user?.username || "User"}
               </button>
 
-              {/* Dropdown */}
-              {open && (
-                <div className="absolute right-0 mt-3 w-40 bg-white shadow-lg rounded-lg border">
+              {openMenu && (
+                <div className="absolute right-0 mt-3 w-56 bg-white shadow-lg rounded-xl border z-50">
 
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setOpenMenu(false)}
+                    className="block px-4 py-3 hover:bg-gray-100"
                   >
-                    Profile
+                    My Profile
                   </Link>
 
                   <Link
-                    to="/appliedjobs"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    to="/applied-jobs"
+                    onClick={() => setOpenMenu(false)}
+                    className="block px-4 py-3 hover:bg-gray-100"
                   >
                     Applied Jobs
                   </Link>
 
+                  
+
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-3 text-red-500 hover:bg-gray-100"
                   >
                     Logout
                   </button>
 
                 </div>
               )}
-
             </div>
           )}
 

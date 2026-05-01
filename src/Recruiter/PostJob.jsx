@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 const PostJob = () => {
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -13,137 +12,100 @@ const PostJob = () => {
     jobType: "",
     location: "",
     category: "",
-    skills: ""
+    skills: "",
   });
 
   const [requirements, setRequirements] = useState([""]);
+
   const [responsibilities, setResponsibilities] = useState([""]);
-  const [errors, setErrors] = useState({});
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleRequirementChange = (index, value) => {
-    const updated = [...requirements];
-    updated[index] = value;
-    setRequirements(updated);
+  const addRequirement = () => {
+    setRequirements([...requirements, ""]);
   };
 
-  const handleResponsibilityChange = (index, value) => {
-    const updated = [...responsibilities];
-    updated[index] = value;
-    setResponsibilities(updated);
+  const addResponsibility = () => {
+    setResponsibilities([...responsibilities, ""]);
   };
 
-  const handleRequirementKeyDown = (e, index) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const updated = [...requirements];
-      updated.splice(index + 1, 0, "");
-      setRequirements(updated);
-    }
+  const updateRequirement = (index, value) => {
+    const data = [...requirements];
+
+    data[index] = value;
+
+    setRequirements(data);
   };
 
-  const handleResponsibilityKeyDown = (e, index) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const updated = [...responsibilities];
-      updated.splice(index + 1, 0, "");
-      setResponsibilities(updated);
-    }
-  };
+  const updateResponsibility = (index, value) => {
+    const data = [...responsibilities];
 
-  const validateForm = () => {
+    data[index] = value;
 
-    let newErrors = {};
-
-    if (!formData.title.trim()) newErrors.title = "Title required";
-    if (!formData.description.trim()) newErrors.description = "Description required";
-    if (!formData.salary.trim()) newErrors.salary = "Salary required";
-    if (!formData.jobType) newErrors.jobType = "Job type required";
-    if (!formData.location.trim()) newErrors.location = "Location required";
-    if (!formData.category.trim()) newErrors.category = "Category required";
-    if (!formData.skills.trim()) newErrors.skills = "Skills required";
-
-    if (requirements.filter(r => r.trim()).length === 0)
-      newErrors.requirements = "Add requirement";
-
-    if (responsibilities.filter(r => r.trim()).length === 0)
-      newErrors.responsibilities = "Add responsibility";
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
+    setResponsibilities(data);
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    if (!validateForm()) return;
-
     const payload = {
-      title: formData.title,
-      description: formData.description,
-      salary: formData.salary,
-      jobType: formData.jobType,
-      location: formData.location,
-      category: formData.category,
-      skills: formData.skills.split(",").map(skill => skill.trim()),
-      requirements: requirements.filter(r => r.trim()),
-      responsibilities: responsibilities.filter(r => r.trim())
+      ...formData,
+
+      skills: formData.skills
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+
+      requirements: requirements.filter(Boolean),
+
+      responsibilities: responsibilities.filter(Boolean),
     };
 
     try {
-
       setLoading(true);
 
       await API.post("/recruiter/newjob", payload);
 
       alert("Job posted successfully");
 
-      navigate("/recruiter/manage-jobs");
-
+      navigate("/recruiter/dashboard/jobs");
     } catch (error) {
-
-      console.log(error.response?.data || error.message);
       alert("Failed to post job");
-
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
+      <h2 className="text-2xl font-bold mb-6">Post New Job</h2>
 
-      <h2 className="text-2xl font-semibold mb-6">
-        Post New Job
-      </h2>
-
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
-
+      <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
         <input
           type="text"
           name="title"
           placeholder="Job Title"
           value={formData.title}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         />
 
         <input
           type="text"
           name="category"
-          placeholder="Category (IT, Design, Marketing)"
+          placeholder="Category"
           value={formData.category}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         />
 
         <input
@@ -152,14 +114,16 @@ const PostJob = () => {
           placeholder="Location"
           value={formData.location}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         />
 
         <select
           name="jobType"
           value={formData.jobType}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         >
           <option value="">Select Job Type</option>
           <option value="full-time">Full Time</option>
@@ -174,87 +138,86 @@ const PostJob = () => {
           placeholder="Salary"
           value={formData.salary}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         />
 
         <input
           type="text"
           name="skills"
-          placeholder="Skills (Node.js, Express, MongoDB)"
+          placeholder="Skills (Node.js, React)"
           value={formData.skills}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
+          required
         />
 
-        <div className="md:col-span-2">
-          <textarea
-            name="description"
-            placeholder="Job Description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="4"
-            className="border p-2 rounded w-full"
-          />
-        </div>
+        <textarea
+          name="description"
+          placeholder="Job Description"
+          value={formData.description}
+          onChange={handleChange}
+          rows="4"
+          className="border p-3 rounded md:col-span-2"
+          required
+        />
 
         {/* Requirements */}
         <div className="md:col-span-2">
           <h3 className="font-semibold mb-2">Requirements</h3>
 
-          {requirements.map((req, index) => (
-            <div key={index} className="flex gap-2 mb-2">
-              <span>•</span>
-
-              <input
-                type="text"
-                value={req}
-                placeholder="Enter requirement"
-                onChange={(e) =>
-                  handleRequirementChange(index, e.target.value)
-                }
-                onKeyDown={(e) =>
-                  handleRequirementKeyDown(e, index)
-                }
-                className="flex-1 border p-2 rounded"
-              />
-            </div>
+          {requirements.map((item, index) => (
+            <input
+              key={index}
+              type="text"
+              value={item}
+              placeholder="Requirement"
+              onChange={(e) => updateRequirement(index, e.target.value)}
+              className="border p-3 rounded w-full mb-2"
+            />
           ))}
+
+          <button
+            type="button"
+            onClick={addRequirement}
+            className="text-blue-600 text-sm"
+          >
+            + Add Requirement
+          </button>
         </div>
 
         {/* Responsibilities */}
         <div className="md:col-span-2">
           <h3 className="font-semibold mb-2">Responsibilities</h3>
 
-          {responsibilities.map((res, index) => (
-            <div key={index} className="flex gap-2 mb-2">
-              <span>•</span>
-
-              <input
-                type="text"
-                value={res}
-                placeholder="Enter responsibility"
-                onChange={(e) =>
-                  handleResponsibilityChange(index, e.target.value)
-                }
-                onKeyDown={(e) =>
-                  handleResponsibilityKeyDown(e, index)
-                }
-                className="flex-1 border p-2 rounded"
-              />
-            </div>
+          {responsibilities.map((item, index) => (
+            <input
+              key={index}
+              type="text"
+              value={item}
+              placeholder="Responsibility"
+              onChange={(e) => updateResponsibility(index, e.target.value)}
+              className="border p-3 rounded w-full mb-2"
+            />
           ))}
+
+          <button
+            type="button"
+            onClick={addResponsibility}
+            className="text-blue-600 text-sm"
+          >
+            + Add Responsibility
+          </button>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white py-2 rounded md:col-span-2"
+          className="bg-blue-600 text-white py-3 rounded md:col-span-2"
         >
           {loading ? "Posting..." : "Post Job"}
         </button>
-
       </form>
-
     </div>
   );
 };

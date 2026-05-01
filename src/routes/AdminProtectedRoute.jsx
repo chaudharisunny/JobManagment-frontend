@@ -1,43 +1,28 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { getToken, getRoles } from "../utils/Auth";
 
 const AdminProtectedRoute = ({ children }) => {
   const location = useLocation();
 
-  const token = getToken();
-  const roles = getRoles();
+  const token = sessionStorage.getItem("token");
 
-  // ✅ Debug (remove later)
+  let roles = [];
+  try {
+    roles = JSON.parse(sessionStorage.getItem("roles")) || [];
+  } catch {
+    roles = [];
+  }
+
   console.log("TOKEN:", token);
   console.log("ROLES:", roles);
 
-  // ✅ Normalize safely
-  const normalizedRoles = Array.isArray(roles)
-    ? roles.map((r) => String(r).toLowerCase().trim())
-    : [];
-
-  // ✅ Flexible admin check
-  const isAdmin = normalizedRoles.some((r) =>
-    r.includes("admin")
-  );
-
-  // 🔥 Prevent false redirect while data loads
-  if (token === null) {
-    return null; // or loading spinner
+  if (!token) {
+    return <Navigate to="/admin/login" replace state={{ from: location }} />;
   }
 
-  // ❌ Not authorized
-  if (!token || !isAdmin) {
-    return (
-      <Navigate
-        to="/admin/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+  if (!roles.includes("admin")) {
+    return <Navigate to="/jobs" replace />;
   }
 
-  // ✅ Authorized
   return children;
 };
 

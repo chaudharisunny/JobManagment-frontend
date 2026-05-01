@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-import { setAuth } from "../../../utils/Auth";
+// import { authStorage, setAuth } from "../../../utils/Auth";
+
 import API from "../../../services/api";
+import { authStorage } from "../../../utils/Auth";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ const AdminLogin = () => {
       }
 
       // ✅ Save auth
-      setAuth(token, roles);
+      authStorage.login(token, roles);
 
       // ✅ Save minimal user
       sessionStorage.setItem(

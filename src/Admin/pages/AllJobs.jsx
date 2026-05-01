@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
-
-
-// ✅ Axios Instance
-
-
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { useNavigate } from "react-router-dom";
 
 const AllJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   // ✅ Fetch Jobs
   const fetchJobs = async () => {
     try {
+      setLoading(true);
+      setError("");
+
       const res = await API.get("/admin/alljobs");
 
-      console.log("Jobs API:", res.data);
+      console.log("Jobs API Response:", res.data);
 
       setJobs(
         res.data?.data ||
@@ -29,6 +26,16 @@ const AllJobs = () => {
       );
     } catch (err) {
       console.error("Error fetching jobs:", err);
+
+      if (err.response?.status === 401) {
+        sessionStorage.clear();
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setError(
+        err.response?.data?.message || "Failed to fetch jobs"
+      );
     } finally {
       setLoading(false);
     }
@@ -43,10 +50,18 @@ const AllJobs = () => {
     if (!window.confirm("Delete this job?")) return;
 
     try {
-      await API.delete(`/jobs/${id}`);
+      await API.delete(`/admin/jobs/${id}`);
+
       setJobs((prev) => prev.filter((j) => j._id !== id));
     } catch (err) {
       console.error("Delete Error:", err);
+
+      if (err.response?.status === 401) {
+        sessionStorage.clear();
+        navigate("/login", { replace: true });
+      } else {
+        alert(err.response?.data?.message || "Delete failed");
+      }
     }
   };
 
@@ -59,41 +74,52 @@ const AllJobs = () => {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">All Jobs</h2>
+    <div className="p-6 bg-white shadow rounded">
 
-      <table className="w-full bg-white shadow rounded">
+      <h2 className="text-xl font-bold mb-4">
+        All Jobs
+      </h2>
+
+      {error && (
+        <div className="mb-3 text-red-500">
+          {error}
+        </div>
+      )}
+
+      <table className="w-full text-sm">
+
         <thead className="bg-gray-200">
           <tr>
-            <th className="p-2">Title</th>
-            <th className="p-2">Salary</th>
-            <th className="p-2">Location</th>
-            <th className="p-2">Company</th>
-            <th className="p-2">Action</th>
+            <th className="p-2 text-left">Title</th>
+            <th className="p-2 text-left">Salary</th>
+            <th className="p-2 text-left">Location</th>
+            <th className="p-2 text-left">Company</th>
+            <th className="p-2 text-center">Action</th>
           </tr>
         </thead>
 
         <tbody>
           {jobs.length > 0 ? (
-            jobs.map((j) => (
-              <tr key={j._id} className="text-center border-t">
-                <td className="p-2">{j.title}</td>
-                <td className="p-2">{j.salary}</td>
-                <td className="p-2">{j.location}</td>
+            jobs.map((job) => (
+              <tr key={job._id} className="border-t">
 
-                {/* ✅ IMPORTANT: depends on populate */}
+                <td className="p-2">{job.title}</td>
+                <td className="p-2">{job.salary}</td>
+                <td className="p-2">{job.location}</td>
+
                 <td className="p-2">
-                  {j.createdBy?.company || "N/A"}
+                  {job.createdBy?.company || "N/A"}
                 </td>
 
-                <td className="p-2">
+                <td className="p-2 text-center">
                   <button
-                    onClick={() => handleDelete(j._id)}
+                    onClick={() => handleDelete(job._id)}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   >
                     Delete
                   </button>
                 </td>
+
               </tr>
             ))
           ) : (
@@ -104,7 +130,9 @@ const AllJobs = () => {
             </tr>
           )}
         </tbody>
+
       </table>
+
     </div>
   );
 };

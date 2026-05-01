@@ -1,12 +1,15 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../../../services/api";
+// ==============================
+// Login.jsx
+// Final Fix: role redirect FIRST
+// ==============================
 
+import { useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import API from "../../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -16,31 +19,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const redirectByRole = (roles) => {
-    const rolePriority = ["admin", "recruiter", "user"];
-    const normalizedRoles = roles.map((r) => r.toLowerCase().trim());
-
-    const primaryRole = rolePriority.find((r) =>
-      normalizedRoles.includes(r)
-    );
-
-    switch (primaryRole) {
-      case "admin":
-        navigate("/admin/dashboard", { replace: true });
-        break;
-      case "recruiter":
-        navigate("/recruiter/dashboard", { replace: true });
-        break;
-      default:
-        navigate("/jobs", { replace: true });
-    }
-  };
-
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -50,48 +33,71 @@ const Login = () => {
       setLoading(true);
       setError("");
 
-      const response = await API.post("/auth/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const res = await API.post("/auth/login", formData);
 
-      const token = response?.data?.token;
-      const user = response?.data?.user;
+      const token = res?.data?.token;
+      const user = res?.data?.user;
 
       if (!token || !user) {
         throw new Error("Invalid response from server");
       }
 
-      const roles = (user.roles || []).map((r) =>
-        r.toLowerCase().trim()
-      );
+      // Normalize roles
+      const roles = Array.isArray(user.roles)
+        ? user.roles.map((role) =>
+            typeof role === "string"
+              ? role.toLowerCase().trim()
+              : String(role?.name || "")
+                  .toLowerCase()
+                  .trim()
+          )
+        : typeof user.roles === "string"
+        ? [user.roles.toLowerCase().trim()]
+        : [];
 
+      // Save auth data
       sessionStorage.setItem("token", token);
       sessionStorage.setItem("roles", JSON.stringify(roles));
       sessionStorage.setItem("user", JSON.stringify(user));
 
-      setIsRedirecting(true);
+      console.log("roles:", roles);
+      console.log("LOGIN TOKEN:", sessionStorage.getItem("token"));
+      console.log("LOGIN ROLES:", sessionStorage.getItem("roles"));
+      
+      // ✅ IMPORTANT: Role redirect first
+      if (roles.includes("admin")) {
+        console.log("redirect to admin");
+        navigate("/admin/dashboard", { replace: true });
+        return;
+      }
 
-      redirectByRole(roles);
+      if (roles.includes("recruiter")) {
+        console.log("redirect to recruiter");
+        navigate("/recruiter/dashboard", { replace: true });
+        return;
+      }
+
+      // Normal user redirect
+      const from =
+        location.state?.from?.pathname || "/jobs";
+
+      navigate(from, { replace: true });
+
     } catch (err) {
-      console.error(err);
       setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Login failed"
+        err?.response?.data?.message ||
+        err?.message ||
+        "Login failed"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ❌ REMOVE TOKEN REDIRECT LOGIC (THIS WAS THE BUG)
-
-  if (isRedirecting) return null;
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+
         <h2 className="text-3xl font-bold text-center mb-6">
           Login to Your Account
         </h2>
@@ -102,7 +108,10 @@ const Login = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
           <input
             type="email"
             name="email"
@@ -126,7 +135,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-xl"
+            className="w-full bg-black text-white py-3 rounded-xl disabled:opacity-60"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -134,10 +143,14 @@ const Login = () => {
 
         <p className="mt-6 text-center text-gray-500 text-sm">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-black font-medium">
+          <Link
+            to="/register"
+            className="text-black font-medium"
+          >
             Register
           </Link>
         </p>
+
       </div>
     </div>
   );

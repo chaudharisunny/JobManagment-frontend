@@ -1,25 +1,16 @@
-import {
-  Outlet,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import { auth } from "../utils/auth";
 
 const RecruiterLayout = () => {
-  const [user, setUser] =
-    useState(null);
+  const [user, setUser] = useState(null);
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const currentUser =
-      auth.user();
+    const currentUser = auth.user();
 
     if (!currentUser) {
       navigate("/login", {
@@ -32,26 +23,21 @@ const RecruiterLayout = () => {
     setUser(currentUser);
   }, [navigate]);
 
-  const handleLogout =
-    () => {
-      auth.logout();
+  const handleLogout = () => {
+    auth.logout();
 
-      navigate("/login", {
-        replace: true,
-      });
-    };
+    navigate("/login", {
+      replace: true,
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-
       <main className="flex-1">
-
-        <div >
+        <div>
           <Outlet />
         </div>
-
       </main>
-
     </div>
   );
 };

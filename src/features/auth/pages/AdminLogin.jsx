@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 // import { authStorage, setAuth } from "../../../utils/Auth";
 
-import API from "../../../services/api";
+import API from "@/services/api";
 import { authStorage } from "../../../utils/Auth";
 
 const AdminLogin = () => {

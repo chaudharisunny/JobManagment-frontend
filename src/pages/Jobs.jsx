@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../services/api";
+import API from "@/services/api";
 import JobCard from "../components/JobCard";
 import JobDetailsCard from "../components/JobDetailsCard";
 

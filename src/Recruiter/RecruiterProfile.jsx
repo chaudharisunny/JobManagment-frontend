@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import API from "../services/api";
+import API from "@/services/api";
 import { toast } from "react-toastify";
 
 const BASE_URL = "http://localhost:3000";

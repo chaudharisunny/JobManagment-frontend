@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../services/api";
+import API from "@/services/api";
 
 const BASE_URL = "http://localhost:3000";
 

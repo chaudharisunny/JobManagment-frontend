@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import JobCard from "../components/JobCard";
-import API from "../service/api";
+import API from "../../Services/Api";
 // import API from "@/services/Api";
 const Home = () => {
   const [jobs, setJobs] = useState([]);

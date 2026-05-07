@@ -1,7 +1,7 @@
 // AppliedList.jsx
 
 import { useEffect, useState } from "react";
-import API from "../utils/API";
+import API from "../Services/Api";
 
 const AppliedList = () => {
   const [appliedJobs, setAppliedJobs] = useState([]);

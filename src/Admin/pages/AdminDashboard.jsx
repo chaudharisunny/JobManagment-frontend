@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 
-import { auth } from "../utils/Auth";
+import { auth } from "../../utils/Auth";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();

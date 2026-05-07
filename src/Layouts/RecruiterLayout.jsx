@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 import { useEffect, useState } from "react";
 
-import { auth } from "../utils/auth";
+import { auth } from "@/utils/auth";
 
 const RecruiterLayout = () => {
   const [user, setUser] = useState(null);

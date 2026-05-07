@@ -3,8 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 // import { authStorage, setAuth } from "../../../utils/Auth";
 
-import API from "@/services/api";
-import { authStorage } from "../../../utils/Auth";
+import API from "../Services/Api";
+import { authStorage } from "../utils/Auth";
 
 const AdminLogin = () => {
   const navigate = useNavigate();

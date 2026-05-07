@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { auth } from "@/utils/auth";
+import { auth } from "../utils/Auth";
 // import AdminSidebar from "../components/AdminSidebar";
 // import AdminTopbar from "../components/AdminTopbar";
 

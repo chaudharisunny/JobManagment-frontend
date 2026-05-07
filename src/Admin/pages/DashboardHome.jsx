@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { Users, Briefcase, UserCheck, FileText } from "lucide-react";
-import API from "@/services/api";
+import API from "../Services/Api";
 
 const DashboardHome = () => {
   const [stats, setStats] = useState({

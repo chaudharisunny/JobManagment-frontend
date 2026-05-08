@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import API from "../utils/API";
+import API from "../service/api";
 
 const ApplyJob = () => {
 

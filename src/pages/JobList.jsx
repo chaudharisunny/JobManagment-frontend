@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "@/services/api";
+import API from "../service/api";
 
 const JobList = () => {
 

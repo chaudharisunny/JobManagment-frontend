@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import API from "../services/Api";
+import API from "../../service/api";
 
 
 // ✅ Axios Instance

@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import API from "@/services/api";
+import API from "../../service/api";
 
 const Login = () => {
   const navigate = useNavigate();

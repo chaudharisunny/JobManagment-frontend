@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "@/services/api";
+import API from "../service/api";
 
 const PostJob = () => {
   const navigate = useNavigate();

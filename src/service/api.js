@@ -34,13 +34,11 @@
 
 import axios from "axios";
 
-console.log("API URL:", import.meta.env.VITE_API_URL);
-
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
-
+console.log("API URL:", import.meta.env.VITE_API_URL);
 // Attach JWT automatically
 API.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("token");

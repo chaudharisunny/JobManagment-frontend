@@ -40,7 +40,7 @@ import axios from "axios";
 // });
 
 const API = axios.create({
-  baseURL: "https://jobmanagementrestapis.onrender.com/api/v1",
+  baseURL: "https://jobmanagmentrestapis.onrender.com/api/v1",
   withCredentials: true,
 });
 

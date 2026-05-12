@@ -7,33 +7,33 @@ const JobList = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchJobs = async () => {
-    try {
+  try {
+    setLoading(true);
 
-      setLoading(true);
-      console.log(Response.API)
-      const res = await API.get("/user/joblist");
-      console.log("Job List Response:", res);
-      const data = res.data;
+    const res = await API.get("/user/joblist");
 
-      let extractedJobs =
-        data.jobs ||
-        data.data ||
-        (Array.isArray(data) ? data : []);
+    console.log("Job List Response:", res.data);
 
-      if (!Array.isArray(extractedJobs)) {
-        extractedJobs = [];
-      }
+    const data = res.data;
 
-      setJobs(extractedJobs);
+    let extractedJobs =
+      data.jobs ||
+      data.data ||
+      (Array.isArray(data) ? data : []);
 
-    } catch (error) {
-      console.error("Error fetching job list:", error);
-      setJobs([]);
-    } finally {
-      setLoading(false);
+    if (!Array.isArray(extractedJobs)) {
+      extractedJobs = [];
     }
-  };
 
+    setJobs(extractedJobs);
+
+  } catch (error) {
+    console.error("Error fetching job list:", error);
+    setJobs([]);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchJobs();
   }, []);

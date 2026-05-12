@@ -32,20 +32,47 @@
 
 // export default API;
 
-import axios from "axios";
+// import axios from "axios";
+
+// // const API = axios.create({
+// //   baseURL: import.meta.env.VITE_API_URL,
+// //   withCredentials: true,
+// // });
 
 // const API = axios.create({
-//   baseURL: import.meta.env.VITE_API_URL,
+//   baseURL: "https://jobmanagmentrestapis.onrender.com/api/v1",
 //   withCredentials: true,
 // });
+
+
+// // Attach JWT automatically
+// API.interceptors.request.use((config) => {
+//   const token = sessionStorage.getItem("token");
+
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+
+//   return config;
+// });
+
+// // Auto logout on token expire
+// API.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
+
+// export default API;
+
+import axios from "axios";
 
 const API = axios.create({
   baseURL: "https://jobmanagmentrestapis.onrender.com/api/v1",
   withCredentials: true,
 });
 
-
-// Attach JWT automatically
 API.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("token");
 
@@ -55,13 +82,5 @@ API.interceptors.request.use((config) => {
 
   return config;
 });
-
-// Auto logout on token expire
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 export default API;

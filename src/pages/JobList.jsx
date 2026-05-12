@@ -12,7 +12,7 @@ const JobList = () => {
       setLoading(true);
 
       const res = await API.get("/user/joblist");
-
+      console.log("Job List Response:", res);
       const data = res.data;
 
       let extractedJobs =

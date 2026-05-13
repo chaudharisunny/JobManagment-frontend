@@ -8,7 +8,7 @@ import Registration from "../pages/Auth/Registration";
 /* User Pages */
 import Profile from "../pages/Profile";
 import AppliedList from "../pages/AppliedList";
-
+import JobDetails from "../pages/JobDetails"; // ✅ Added
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -32,6 +32,13 @@ const AppRoutes = () => {
       {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/jobs" element={<Jobs />} />
+
+      {/* ✅ Job Details Route Added */}
+      <Route
+        path="/jobdetails/:id"
+        element={<JobDetails />}
+      />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Registration />} />
 
@@ -53,8 +60,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
-      
 
       {/* Admin */}
       <Route

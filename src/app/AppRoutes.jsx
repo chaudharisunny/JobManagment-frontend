@@ -8,7 +8,8 @@ import Registration from "../pages/Auth/Registration";
 /* User Pages */
 import Profile from "../pages/Profile";
 import AppliedList from "../pages/AppliedList";
-import JobDetails from "../pages/JobDetails"; // ✅ Added
+import JobDetails from "../pages/JobDetails";
+import ApplyJob from "../pages/ApplyJob"; // ✅ Added
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -33,10 +34,20 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/jobs" element={<Jobs />} />
 
-      {/* ✅ Job Details Route Added */}
+      {/* Job Details */}
       <Route
         path="/jobdetails/:id"
         element={<JobDetails />}
+      />
+
+      {/* ✅ Apply Job Route Added */}
+      <Route
+        path="/applyjob/:id"
+        element={
+          <ProtectedRoute>
+            <ApplyJob />
+          </ProtectedRoute>
+        }
       />
 
       <Route path="/login" element={<Login />} />

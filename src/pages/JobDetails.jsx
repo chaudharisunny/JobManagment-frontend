@@ -42,7 +42,7 @@ const JobDetails = () => {
   const handleApply = () => {
 
     const token = sessionStorage.getItem("token");
-
+    console.log("Apply Clicked - Token:", token);
     if (!token) {
       navigate("/login");
       return;

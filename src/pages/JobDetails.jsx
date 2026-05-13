@@ -41,7 +41,7 @@ const JobDetails = () => {
   // Navigate to Apply Job Page
   const handleApply = () => {
 
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
       navigate("/login");

@@ -63,18 +63,20 @@ const Jobs = () => {
   }, [search, jobType, location, category, salary, page]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 lg:p-6">
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         {/* FILTER PANEL */}
 
-        <div className="bg-white p-5 rounded-lg shadow h-fit sticky top-20">
+        <div className="bg-white p-4 lg:p-5 rounded-lg shadow h-fit lg:sticky lg:top-20">
 
-          <h2 className="text-lg font-semibold mb-4">
+          {/* Desktop Only */}
+          <h2 className="hidden lg:block text-lg font-semibold mb-4">
             Filters
           </h2>
 
+          {/* Search */}
           <input
             type="text"
             placeholder="Search job"
@@ -83,6 +85,7 @@ const Jobs = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
 
+          {/* Location */}
           <input
             type="text"
             placeholder="Location"
@@ -91,50 +94,59 @@ const Jobs = () => {
             onChange={(e) => setLocation(e.target.value)}
           />
 
-          <select
-            className="w-full border p-2 rounded mb-3"
-            value={jobType}
-            onChange={(e) => setJobType(e.target.value)}
-          >
-            <option value="">Job Type</option>
-            <option value="Full-Time">Full-Time</option>
-            <option value="Part-Time">Part-Time</option>
-            <option value="Remote">Remote</option>
-          </select>
+          {/* Desktop Filters */}
+          <div className="hidden lg:block">
 
-          <select
-            className="w-full border p-2 rounded mb-3"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Category</option>
-            <option value="Technology">Technology</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Finance">Finance</option>
-          </select>
+            <select
+              className="w-full border p-2 rounded mb-3"
+              value={jobType}
+              onChange={(e) => setJobType(e.target.value)}
+            >
+              <option value="">Job Type</option>
+              <option value="Full-Time">Full-Time</option>
+              <option value="Part-Time">Part-Time</option>
+              <option value="Remote">Remote</option>
+            </select>
 
-          <select
-            className="w-full border p-2 rounded"
-            value={salary}
-            onChange={(e) => setSalary(e.target.value)}
-          >
-            <option value="">Salary</option>
-            <option value="20000">20k+</option>
-            <option value="30000">30k+</option>
-            <option value="50000">50k+</option>
-          </select>
+            <select
+              className="w-full border p-2 rounded mb-3"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Category</option>
+              <option value="Technology">Technology</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Finance">Finance</option>
+            </select>
+
+            <select
+              className="w-full border p-2 rounded"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+            >
+              <option value="">Salary</option>
+              <option value="20000">20k+</option>
+              <option value="30000">30k+</option>
+              <option value="50000">50k+</option>
+            </select>
+
+          </div>
 
         </div>
 
 
         {/* JOB LIST */}
 
-        <div className="lg:col-span-2 h-[80vh] overflow-y-auto pr-2 space-y-3">
+        <div className="lg:col-span-2 h-auto lg:h-[80vh] lg:overflow-y-auto pr-2 space-y-3">
 
           {loading ? (
-            <p>Loading jobs...</p>
+            <p className="text-center py-10">
+              Loading jobs...
+            </p>
           ) : jobs.length === 0 ? (
-            <p>No jobs found</p>
+            <p className="text-center py-10">
+              No jobs found
+            </p>
           ) : (
 
             jobs.map((job) => (
@@ -154,24 +166,24 @@ const Jobs = () => {
 
           {/* PAGINATION */}
 
-          <div className="flex justify-center items-center gap-4 pt-4">
+          <div className="flex justify-center items-center gap-4 pt-4 pb-6">
 
             <button
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
-              className="px-3 py-1 bg-gray-200 rounded"
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
             >
               Prev
             </button>
 
-            <span className="text-sm">
+            <span className="text-sm font-medium">
               {page} / {totalPages}
             </span>
 
             <button
               disabled={page === totalPages}
               onClick={() => setPage(page + 1)}
-              className="px-3 py-1 bg-black text-white rounded"
+              className="px-4 py-2 bg-black text-white rounded disabled:opacity-50"
             >
               Next
             </button>
@@ -183,19 +195,17 @@ const Jobs = () => {
 
         {/* JOB DETAILS */}
 
-        {/* JOB DETAILS */}
+        <div className="hidden lg:block lg:col-span-2 bg-white p-6 rounded-lg shadow">
 
-<div className="lg:col-span-2 bg-white p-6 rounded-lg shadow">
+          {selectedJob ? (
+            <JobDetailsCard job={selectedJob} />
+          ) : (
+            <p className="text-gray-500 text-center mt-20">
+              Select a job to view details
+            </p>
+          )}
 
-  {selectedJob ? (
-    <JobDetailsCard job={selectedJob} />
-  ) : (
-    <p className="text-gray-500 text-center mt-20">
-      Select a job to view details
-    </p>
-  )}
-
-</div>
+        </div>
 
       </div>
 

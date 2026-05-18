@@ -9,7 +9,7 @@ import Registration from "../pages/Auth/Registration";
 import Profile from "../pages/Profile";
 import AppliedList from "../pages/AppliedList";
 import JobDetails from "../pages/JobDetails";
-import ApplyJob from "../pages/ApplyJob"; // ✅ Added
+import ApplyJob from "../pages/ApplyJob";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -22,17 +22,24 @@ import AllRecruiter from "../Admin/pages/AllRecruiter";
 
 /* Recruiter */
 import RecruiterDashboard from "../Recruiter/RecruiterDashboard";
+import RecruiterProfile from "../Recruiter/RecruiterProfile";
 import RecruiterHome from "../Recruiter/DashboardHome";
 import RecruiterJobs from "../Recruiter/ManageJobs";
 import PostJob from "../Recruiter/PostJob";
+import Applicants from "../Recruiter/Applicants";
+import EditJob from "../Recruiter/EditJob";
 
 const AppRoutes = () => {
   return (
     <Routes>
 
-      {/* Public */}
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/jobs" element={<Jobs />} />
+
+      <Route
+        path="/jobs"
+        element={<Jobs />}
+      />
 
       {/* Job Details */}
       <Route
@@ -40,7 +47,7 @@ const AppRoutes = () => {
         element={<JobDetails />}
       />
 
-      {/* ✅ Apply Job Route Added */}
+      {/* Apply Job */}
       <Route
         path="/applyjob/:id"
         element={
@@ -50,8 +57,16 @@ const AppRoutes = () => {
         }
       />
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Registration />} />
+      {/* Auth */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/register"
+        element={<Registration />}
+      />
 
       {/* User Protected */}
       <Route
@@ -72,7 +87,7 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Admin */}
+      {/* ================= ADMIN ================= */}
       <Route
         path="/admin/dashboard"
         element={
@@ -81,13 +96,28 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<DashboardHome />} />
-        <Route path="users" element={<AllUsers />} />
-        <Route path="jobs" element={<AllJobs />} />
-        <Route path="recruiters" element={<AllRecruiter />} />
+        <Route
+          index
+          element={<DashboardHome />}
+        />
+
+        <Route
+          path="users"
+          element={<AllUsers />}
+        />
+
+        <Route
+          path="jobs"
+          element={<AllJobs />}
+        />
+
+        <Route
+          path="recruiters"
+          element={<AllRecruiter />}
+        />
       </Route>
 
-      {/* Recruiter */}
+      {/* ================= RECRUITER ================= */}
       <Route
         path="/recruiter/dashboard"
         element={
@@ -96,30 +126,87 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<RecruiterHome />} />
-        <Route path="jobs" element={<RecruiterJobs />} />
-        <Route path="post-job" element={<PostJob />} />
+
+        {/* Dashboard Home */}
+        <Route
+          index
+          element={<RecruiterHome />}
+        />
+
+        {/* Manage Jobs */}
+        <Route
+          path="jobs"
+          element={<RecruiterJobs />}
+        />
+
+        {/* Post Job */}
+        <Route
+          path="post-job"
+          element={<PostJob />}
+        />
+
+        {/* Applicants */}
+        <Route
+          path="applicants/:id"
+          element={<Applicants />}
+        />
+
+        {/* Edit Job */}
+        <Route
+          path="edit-job/:id"
+          element={<EditJob />}
+        />
+
+        {/* Recruiter Profile */}
+        <Route
+          path="profile/:id"
+          element={<RecruiterProfile />}
+        />
+
       </Route>
 
       {/* Redirect Shortcuts */}
       <Route
         path="/admin"
-        element={<Navigate to="/admin/dashboard" replace />}
+        element={
+          <Navigate
+            to="/admin/dashboard"
+            replace
+          />
+        }
       />
 
       <Route
         path="/recruiter"
-        element={<Navigate to="/recruiter/dashboard" replace />}
+        element={
+          <Navigate
+            to="/recruiter/dashboard"
+            replace
+          />
+        }
       />
 
       {/* Dashboard Shortcut */}
       <Route
         path="/dashboard"
-        element={<Navigate to="/profile" replace />}
+        element={
+          <Navigate
+            to="/profile"
+            replace
+          />
+        }
       />
 
       {/* 404 */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/"
+            replace
+          />
+        }
+      />
 
     </Routes>
   );

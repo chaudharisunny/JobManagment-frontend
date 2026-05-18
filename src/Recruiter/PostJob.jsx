@@ -71,8 +71,8 @@ const PostJob = () => {
     try {
       setLoading(true);
 
-      await API.post("/recruiter/newjob", payload);
-
+      const newpost= await API.post("/recruiter/newjob", payload);
+      console.log(newpost);
       alert("Job posted successfully");
 
       navigate("/recruiter/dashboard/jobs");
